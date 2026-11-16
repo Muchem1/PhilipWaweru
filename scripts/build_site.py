@@ -20,7 +20,12 @@ for link in a.links:
 for im in a.images:
  if im.get('src'):assert im.get('alt'),'Missing image description'
 js=(root/'assets/js/portfolio.js').read_text()
-for asset in re.findall(r"image:'([^']+)'",js):assert (root/'assets/portfolio'/asset).is_file(),asset
+for asset in re.findall(r"(?:image|file):'([^']+)'",js):assert (root/'assets/portfolio'/asset).is_file(),asset
+for css in (root/'assets/css').glob('*.css'):
+ if css.name not in ['portfolio.css','fonts.css','editorial-fonts.css']:continue
+ for target in re.findall(r'url\(([^)]+)\)',css.read_text()):
+  target=target.strip("\"'")
+  if not target.startswith(('http','data:')):assert (css.parent/target).is_file(),target
 geo=json.loads((root/'assets/portfolio/kenya-counties.json').read_text());assert len(geo['features'])==47
 assert abs((90.98-78.77)-12.21)<1e-8
 out=root/'dist';out.mkdir(exist_ok=True)

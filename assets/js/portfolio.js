@@ -31,7 +31,7 @@ const cases = {
     methods:['Prepared datasets covering 14 infrastructure types, including markets, veterinary services, processing facilities and water points.','Combined facility locations, boundaries, population demand and motorised travel-time analysis.','Built national and county filters, infrastructure attribute summaries, seasonal/permanent water comparisons and 60-minute access indicators.','Prepared CSV and Parquet outputs and Word/PDF reporting workflows.'],
     result:'A single application connects location, attributes, accessibility and reporting so that infrastructure questions can be explored at national and county scales.',
     outputs:'Interactive Shiny dashboard, maps, comparative charts, reusable datasets and downloadable bulletins.',
-    image:'livestock-dashboard.webp', imageAlt:'Earlier working screenshot of the livestock infrastructure dashboard',imageCaption:'An earlier working view of the application; the final workflow includes national and county reporting.',
+    image:'livestock-explorer.webp', imageAlt:'Original Livestock Master Plan facility explorer interface',imageCaption:'Original working interface: facility filters and infrastructure map.',images:[{file:'livestock-overview.webp',alt:'County overview summary panel from the original Livestock Master Plan interface',caption:'Original county overview, cropped to its summary panel. Values shown belong to the earlier application state.'}],
     caveat:'Accessibility and infrastructure indicators depend on inventory completeness, input dates and travel assumptions. The screenshot is a project artifact, not a live application embedded in this portfolio.'
   },
   rabies:{
@@ -45,17 +45,16 @@ const cases = {
     outputs:'Catchment maps, potential population coverage summaries and travel-time access layers.',
     caveat:'Geographical catchments represent potential access, not actual vaccination uptake or protection. The buffer illustration is a method diagram, not a mapped vaccination site. Human population inputs alone do not directly measure the number of dogs vaccinated.'
   },
-  matching:{
-    category:'DATA ENGINEERING / RESEARCH DATA QUALITY',title:'Two facility lists. A clearer picture.',
-    lead:'Comparing the Kenya Master Health Facility Registry (KMHFR) and Kenya Health Facility Assessment (KHFA) lists to examine overlap and make data-quality decisions transparent.',
-    tags:['R','Record linkage','Deduplication','Audit outputs'],
-    question:'Which facilities appear in both lists, and how do name, coordinate and administrative inconsistencies affect the comparison?',
-    role:'I developed and revised the matching workflow, cleaned facility identifiers and administrative attributes, generated audit outputs, and produced a presentation-ready comparison dashboard.',
-    methods:['Normalised names by removing differences in case, punctuation, accents and spacing.','Compared coordinate-based matching with exact cleaned-name matching as separate analytical approaches.','Checked duplicates, missing attributes, ambiguous candidates and administrative consistency.','Produced matched and unmatched outputs with summaries of how the matching rules affected inclusion.'],
-    result:'A reproducible comparison workflow with explicit matching rules and review files, rather than an unexplained overlap total.',
-    outputs:'Matched/unmatched CSVs, data-quality tables, candidate audits and a map-based comparison dashboard.',
-    image:'facility-matching.webp',imageAlt:'KMHFR and KHFA facility comparison dashboard',imageCaption:'An exact cleaned-name matching run. Totals are specific to the input versions and matching rules shown in this artifact.',
-    caveat:'An exact name match is a rule-based candidate match, not conclusive proof of facility identity. Identical names and inconsistent administrative fields require review; totals can change between dataset versions and matching methods.'
+  kdhs:{
+    category:'NATIONAL SURVEY DATA / RESEARCH SOFTWARE',title:'Making survey evidence easier to explore',
+    lead:'Reproducible data workflows and Shiny dashboard views for Kenya Demographic and Health Survey material in Chapters 2, 4 and 5. The project connects complex source tables with consistent analytical data and interactive exploration.',
+    tags:['R','Data harmonisation','CSV / Parquet','Shiny'],
+    question:'How can complex, multi-header survey tables become consistent datasets that researchers and dashboard users can explore without repeatedly restructuring the source files?',
+    role:'At CEMA, I developed reproducible R workflows for Chapters 2, 4 and 5, standardised indicators and disaggregations, generated CSV and Parquet outputs, and developed Shiny dashboard views for exploring survey results.',
+    methods:['Parsed multi-header survey tables and reshaped their structure for analysis.','Harmonised indicator definitions and population disaggregations so that the same concepts could be handled consistently across tables.','Produced reusable CSV and Parquet outputs rather than tying data preparation to one visualisation.','Developed chapter-based Shiny views for interactive exploration of the prepared survey results.'],
+    result:'A reusable route from formatted survey publications to harmonised data and interactive research views. This work demonstrates the data preparation and application development needed to make a large survey easier to use.',
+    outputs:'Reproducible R processing workflows, harmonised chapter datasets, CSV and Parquet files, and Shiny dashboard views.',
+    caveat:'Published survey estimates retain their original population definitions, denominators and sampling limitations. A dashboard makes results easier to inspect; it does not make differently defined indicators directly comparable. The portfolio illustration describes the workflow and contains no simulated survey findings.'
   },
   fires:{
     category:'EARTH OBSERVATION / UNDERGRADUATE RESEARCH',title:'Reading a landscape after fire',
@@ -70,63 +69,65 @@ const cases = {
     caveat:'Satellite observations have different resolutions, acquisition times and retrieval limitations. The portfolio does not claim a model accuracy score or causal pollution effect without the supporting evaluation results.'
   }
 };
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-// Progressive enhancement: content stays visible if the observer is unsupported.
-if ('IntersectionObserver' in window) {
-  document.documentElement.classList.add('js-ready');
-  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.07});
-  $$('.reveal').forEach(el=>observer.observe(el));
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+if('IntersectionObserver' in window){
+ document.documentElement.classList.add('js-ready');
+ const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');observer.unobserve(e.target);}}),{threshold:.055});
+ $$('.reveal').forEach(el=>observer.observe(el));
 }
 $('#year').textContent=new Date().getFullYear();
 const menu=$('.menu-toggle');
+function closeMenu(){menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Open navigation');$('#navigation').classList.remove('open');}
 menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Close navigation':'Open navigation');$('#navigation').classList.toggle('open',open);});
-$$('#navigation a').forEach(a=>a.addEventListener('click',()=>{menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Open navigation');$('#navigation').classList.remove('open');}));
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.getAttribute('aria-expanded')==='true'){menu.click();menu.focus();}});
+$$('#navigation a').forEach(a=>a.addEventListener('click',closeMenu));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.getAttribute('aria-expanded')==='true'){closeMenu();menu.focus();}});
 let ticking=false;
 addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{const total=document.documentElement.scrollHeight-innerHeight;$('.scroll-progress').style.width=`${total>0?scrollY/total*100:0}%`;ticking=false;});ticking=true;}},{passive:true});
 let animation;
 $$('[data-scenario]').forEach(button=>button.addEventListener('click',()=>{
-  const expanded=button.dataset.scenario==='expanded';
-  $$('[data-scenario]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
-  const target=expanded?90.98:78.77, start=parseFloat($('#coverage-number').textContent);
-  $('#coverage-fill').style.width=target+'%';
-  $('#scenario-detail').innerHTML=`<span class="status-dot"></span>${expanded?'Expanded · 90.98% within 30 minutes · +12.21 pp':'Baseline · 155 existing sites · 78.77% within 30 minutes'}`;
-  cancelAnimationFrame(animation);
-  if(reduced.matches){$('#coverage-number').textContent=target.toFixed(2);return;}
-  const t=performance.now();
-  const frame=now=>{const p=Math.min((now-t)/650,1), eased=1-Math.pow(1-p,3);$('#coverage-number').textContent=(start+(target-start)*eased).toFixed(2);if(p<1)animation=requestAnimationFrame(frame);};
-  animation=requestAnimationFrame(frame);
+ const expanded=button.dataset.scenario==='expanded',target=expanded?90.98:78.77,start=parseFloat($('#coverage-number').textContent);
+ $$('[data-scenario]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+ $('#coverage-fill').style.width=target+'%';
+ $('#scenario-detail').textContent=expanded?'Expanded · 90.98% within 30 minutes · 98 additional sites':'Baseline · 155 existing sites · 78.77% within 30 minutes';
+ cancelAnimationFrame(animation);if(reduced.matches){$('#coverage-number').textContent=target.toFixed(2);return;}
+ const t=performance.now();const frame=now=>{const p=Math.min((now-t)/650,1);$('#coverage-number').textContent=(start+(target-start)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)animation=requestAnimationFrame(frame);};animation=requestAnimationFrame(frame);
 }));
 $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
+ const update=()=>{
   $$('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});
-  const filter=button.dataset.filter;
-  const featureShown=filter==='all'||filter==='modelling'||filter==='geospatial';
-  $('#ct-project').hidden=!featureShown;
-  let count=featureShown?1:0;
-  $$('.project-card').forEach(card=>{const show=filter==='all'||card.dataset.categories.split(' ').includes(filter);card.hidden=!show;if(show){count++;card.classList.add('is-visible');}});
+  let count=0;
+  $$('[data-project-card]').forEach(card=>{const show=button.dataset.filter==='all'||card.dataset.categories.split(' ').includes(button.dataset.filter);card.hidden=!show;if(show){count++;card.classList.add('is-visible');}});
+  const empty=$$('.project-grid > [data-project-card]').every(card=>card.hidden);$('.project-grid').hidden=empty;
   $('#filter-status').textContent=`${count} projects shown`;
+ };
+ if(document.startViewTransition&&!reduced.matches)document.startViewTransition(update);else update();
+}));
+const livestockViews={
+ explorer:{file:'livestock-explorer.webp',alt:'Original Livestock Master Plan interface with infrastructure filters, summary indicators and a facility map in Baringo',caption:'Original working interface · facility filters and map',description:'Livestock infrastructure facility explorer — original working interface capture. The screenshot records an earlier application state; displayed values are not presented as current national estimates.',height:988},
+ overview:{file:'livestock-overview.webp',alt:'Original Livestock Master Plan county overview, cropped to its summary indicators and introductory panel',caption:'Original county overview · summary panel (cropped)',description:'Livestock Master Plan county overview — original interface capture cropped to the summary panel. Figures shown belong to this earlier working application state.',height:445}
+};
+$$('[data-livestock-view]').forEach(button=>button.addEventListener('click',()=>{
+ const view=livestockViews[button.dataset.livestockView];
+ $$('[data-livestock-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+ const image=$('#livestock-screen');image.src='assets/portfolio/'+view.file;image.alt=view.alt;image.height=view.height;
+ for(const el of [$('#livestock-screen-button'),$('#expand-livestock')]){el.dataset.image=image.getAttribute('src');el.dataset.caption=view.description;}
+ $('#livestock-screen-button').setAttribute('aria-label','Open full '+button.textContent.trim()+' screenshot');
+ $('#livestock-caption').textContent=view.caption;
 }));
 const dialog=$('#case-dialog');
 function renderCase(id){
-  const c=cases[id];if(!c)return;
-  $('#case-body').innerHTML=`<p class="case-eyebrow">${c.category}</p><h2 id="case-title" tabindex="-1">${c.title}</h2><p class="case-lead">${c.lead}</p><div class="tags">${c.tags.map(t=>`<span>${t}</span>`).join('')}</div><div class="case-detail-grid"><div class="case-detail"><h3>THE QUESTION</h3><p>${c.question}</p></div><div class="case-detail"><h3>MY CONTRIBUTION</h3><p>${c.role}</p></div></div><div class="case-detail"><h3>THE APPROACH</h3><ul>${c.methods.map(m=>`<li>${m}</li>`).join('')}</ul></div><div class="case-result">${c.result}</div><div class="case-detail"><h3>DELIVERABLES</h3><p>${c.outputs}</p></div>${c.image?`<button class="case-asset" data-image="assets/portfolio/${c.image}" data-caption="${c.imageCaption}"><img src="assets/portfolio/${c.image}" alt="${c.imageAlt}"><span>${c.imageCaption} Open full image ↗</span></button>`:''}<p class="case-caveat"><strong>Interpretation:</strong> ${c.caveat}</p><div class="case-links">${id==='ct'?'<a class="text-link" href="assets/portfolio/ct-scenario-summary.csv" download>Download scenario data ↓</a>':''}<a class="text-link" href="mailto:muchemiwaweruu@gmail.com?subject=${encodeURIComponent('Portfolio enquiry: '+c.title)}">Discuss this project ↗</a><a class="text-link" href="assets/portfolio/Philip_Muchemi_CV.pdf" target="_blank" rel="noopener">View résumé ↗</a></div>`;
-  if(!dialog.open)dialog.showModal();
-  dialog.scrollTop=0;
-  $('#case-title').focus({preventScroll:true});
+ const c=cases[id];if(!c)return;
+ const asset=(file,alt,caption)=>`<button class="case-asset" data-image="assets/portfolio/${file}" data-caption="${caption}"><img src="assets/portfolio/${file}" alt="${alt}"><span>${caption} Open full image ↗</span></button>`;
+ $('#case-body').innerHTML=`<p class="case-eyebrow">${c.category}</p><h2 id="case-title" tabindex="-1">${c.title}</h2><p class="case-lead">${c.lead}</p><div class="tags">${c.tags.map(t=>`<span>${t}</span>`).join('')}</div><div class="case-detail-grid"><div class="case-detail"><h3>THE QUESTION</h3><p>${c.question}</p></div><div class="case-detail"><h3>MY CONTRIBUTION</h3><p>${c.role}</p></div></div><div class="case-detail"><h3>THE APPROACH</h3><ul>${c.methods.map(m=>`<li>${m}</li>`).join('')}</ul></div><div class="case-result">${c.result}</div><div class="case-detail"><h3>DELIVERABLES</h3><p>${c.outputs}</p></div>${c.image?asset(c.image,c.imageAlt,c.imageCaption):''}${(c.images||[]).map(a=>asset(a.file,a.alt,a.caption)).join('')}<p class="case-caveat"><strong>Interpretation:</strong> ${c.caveat}</p><div class="case-links">${id==='ct'?'<a class="text-link" href="assets/portfolio/ct-scenario-summary.csv" download>Download scenario data ↓</a>':''}<a class="text-link" href="mailto:muchemiwaweruu@gmail.com?subject=${encodeURIComponent('Portfolio enquiry: '+c.title)}">Discuss this project ↗</a><a class="text-link" href="assets/portfolio/Philip_Muchemi_CV.pdf" target="_blank" rel="noopener">View résumé ↗</a></div>`;
+ if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('#case-title').focus({preventScroll:true});
 }
 function openCase(id){if(!cases[id])return;history.pushState(null,'',`#case/${id}`);renderCase(id);}
 document.addEventListener('click',event=>{
-  const button=event.target.closest('[data-case],[data-open-case]');
-  if(button){event.preventDefault();openCase(button.dataset.case||button.dataset.openCase);}
-  const image=event.target.closest('[data-image]');
-  if(image){$('#lightbox-image').src=image.dataset.image;$('#lightbox-image').alt=image.dataset.caption;$('#image-caption').textContent=image.dataset.caption;$('#image-dialog').showModal();}
+ const button=event.target.closest('[data-case],[data-open-case]');if(button){event.preventDefault();openCase(button.dataset.case||button.dataset.openCase);}
+ const image=event.target.closest('[data-image]');if(image){$('#lightbox-image').src=image.dataset.image;$('#lightbox-image').alt=image.dataset.caption;$('#image-caption').textContent=image.dataset.caption;$('#image-dialog').showModal();}
 });
-$$('dialog').forEach(d=>{
-  d.querySelector('.dialog-close').addEventListener('click',()=>d.close());
-  d.addEventListener('click',event=>{if(event.target===d){const r=d.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)d.close();}});
-});
+$$('dialog').forEach(d=>{d.querySelector('.dialog-close').addEventListener('click',()=>d.close());d.addEventListener('click',event=>{if(event.target===d){const r=d.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)d.close();}});});
 dialog.addEventListener('close',()=>{if(location.hash.startsWith('#case/'))history.replaceState(null,'','#work');});
 function syncCase(){const id=location.hash.match(/^#case\/(\w+)$/)?.[1];if(id&&cases[id])renderCase(id);else if(dialog.open)dialog.close();}
 addEventListener('hashchange',syncCase);addEventListener('popstate',syncCase);syncCase();
@@ -144,12 +145,12 @@ async function loadMap(){
       const d=f.geometry.coordinates.map(p=>p.map(ring=>ring.map((p,j)=>`${j?'L':'M'}${((p[0]-x0)*scale+ox).toFixed(1)},${((y1-p[1])*scale+oy).toFixed(1)}`).join('')+'Z').join('')).join('');
       path.setAttribute('d',d);path.setAttribute('class','county');path.setAttribute('tabindex',i===0?'0':'-1');path.setAttribute('role','button');path.setAttribute('aria-label',`${f.properties.name} County`);
       const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=f.properties.name+' County';path.append(title);
-      const highlight=()=>{readout.textContent=f.properties.name+' County · Kenya';};
+      const highlight=()=>{readout.textContent=f.properties.name+' · Kenya';};
       path.addEventListener('mouseenter',highlight);path.addEventListener('focus',highlight);path.addEventListener('click',()=>{svg.querySelectorAll('.county').forEach(p=>p.setAttribute('tabindex','-1'));path.setAttribute('tabindex','0');highlight();path.focus({preventScroll:true});});
       path.addEventListener('keydown',event=>{if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();const delta=event.key==='ArrowRight'||event.key==='ArrowDown'?1:-1;const next=event.key==='Home'?0:event.key==='End'?data.features.length-1:(i+delta+data.features.length)%data.features.length;const paths=svg.querySelectorAll('.county');paths.forEach(p=>p.setAttribute('tabindex','-1'));paths[next].setAttribute('tabindex','0');paths[next].focus({preventScroll:true});}else if(event.key==='Enter'||event.key===' '){event.preventDefault();highlight();}});
       svg.append(path);
     });
-    svg.addEventListener('mouseleave',()=>{if(!svg.contains(document.activeElement))readout.textContent='47 counties. One connected picture.';});
+    svg.addEventListener('mouseleave',()=>{if(!svg.contains(document.activeElement))readout.textContent='Kenya · 47 counties';});
   }catch(error){readout.textContent='Research focus: Kenya · 47 counties';svg.setAttribute('aria-label','Map could not load. Research focus: Kenya.');}
 }
 loadMap();
