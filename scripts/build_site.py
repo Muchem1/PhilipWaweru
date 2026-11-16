@@ -16,7 +16,7 @@ assert len(set(a.ids))==len(a.ids),'Duplicate HTML IDs'
 for link in a.links:
  if link.startswith(('http:','https:','mailto:','data:')):continue
  if link.startswith('#'):assert link[1:] in a.ids,link
- else:assert (root/link.split('#')[0]).is_file(),link
+ else:assert (root/link.split('#')[0].split('?')[0]).is_file(),link
 for im in a.images:
  if im.get('src'):assert im.get('alt'),'Missing image description'
 js=(root/'assets/js/portfolio.js').read_text()
