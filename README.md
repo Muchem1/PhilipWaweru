@@ -1,20 +1,10 @@
-# Philip Muchemi — research & data science portfolio
+# Philip Muchemi — data science & research
 
 Live: https://muchem1.github.io/PhilipWaweru/
 
-A responsive, dependency-free portfolio served by GitHub Pages from the repository root. The design presents project questions, individual contributions, methods, deliverables and interpretation limits.
+A responsive, dependency-free portfolio with eleven case studies. The dark green/lime visual system combines readable project summaries, original research figures, aggregate charts and accessible project dialogs.
 
-## Structure
-
-- `index.html`: accessible page content, SEO and structured profile metadata.
-- `assets/css/portfolio.css`: visual system, responsive layouts, reduced-motion and print support.
-- `assets/css/fonts.css`: locally hosted font declarations (DM Sans, Space Grotesk and Instrument Serif).
-- `assets/js/portfolio.js`: six case studies, filters, accessible dialogs, CT scenario comparison and county-map interactions.
-- `assets/portfolio/`: compressed project visuals, simplified county geometry, professional CV and downloadable chart data.
-- `scripts/build_site.py`: local reference checks and a disposable `dist/` preview.
-- `scripts/build_resume.py`: rebuild the two-page résumé (Python + ReportLab + DejaVu Sans).
-
-## Run & verify
+## Development
 
 ```sh
 python scripts/build_site.py
@@ -22,34 +12,32 @@ node --check assets/js/portfolio.js
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000/`. No API keys, analytics trackers, external JavaScript libraries, package installation or build step are required for GitHub Pages. Fonts are served locally. Native `<dialog>` provides keyboard focus containment and Escape-to-close behavior. County navigation uses a single tab stop and arrow keys. Motion respects the system reduced-motion preference.
+GitHub Pages serves `index.html` and `assets/` directly. The build command validates references, image descriptions, SVG syntax, unique IDs and county geometry, then prepares an ignored `dist/` directory for preview. No credentials, external JavaScript dependencies or build step are required for production.
 
-Project deep links use `#case/ct`, `#case/yellowfever`, `#case/livestock`, `#case/rabies`, `#case/kdhs` and `#case/fires`.
+- `assets/js/portfolio.js`: case studies, native dialogs, filters, CT scenario comparison, screenshot gallery and county navigation.
+- `assets/css/portfolio.css`: locally hosted typography, responsive layout, reduced motion and print styles.
+- `scripts/build_actual_visuals.py`: build result figures from the four supplied project archives after extraction. Pass the directory containing `Brazil/`, `manuscript_occurence/`, `outputs/` and `outputs_00/`.
+- `scripts/build_project_visuals.py`: context charts from earlier verified project sources; requires those local source files. Does not overwrite fitted yellow fever or rabies results.
+- `assets/portfolio/actual-output-provenance.json`: aggregate inputs and source labels for the new result charts.
 
-## Evidence and visual provenance
+## Projects and evidence
 
-The biography, employment dates, methods and contribution descriptions were checked against Philip's latest November 2026 CVs. Six dashboards and seven manuscripts mean **analytical contributions**, not six sole-authored products or seven published papers. The CT scenario is a modelled analysis, not implementation evidence.
+1. **Brazil paediatric care access:** Hospital Pequeno Príncipe, Curitiba. Postal-code geocoding and walking/motorised friction-surface modelling. The public comparison is redrawn from the supplied aggregate plots (20 records); both original distributions are included. This small sample does not represent Brazil or Paraná. Patient points and postal-code records are excluded.
+2. **CT placement:** 155 existing sites; the scenario adding 98 sites increases modelled 30-minute population coverage from 78.77% to 90.98%. This is a project scenario, not measured implementation impact.
+3. **Kenya Livestock Master Plan:** original working interface captures, live dashboard link and water-point inventory record counts. Earlier screenshot values are not asserted to be current national estimates.
+4. **Healthcare accessibility and readiness:** original paired oncology maps and national CSV results. Population within less than 120 minutes is 91.1989% for available services (290 facilities) and 85.0148% for availability plus a 100% readiness score (50 facilities). Source denominators are retained; unclassified population is not reassigned.
+5. **Yellow fever:** actual fitted `manuscript_occurence` BYM2 posterior output for 47 counties, original probability and uncertainty maps, and covariate effect intervals. The coloured county map is redrawn from fitted probabilities. Occurrence is not individual infection risk or a forecast.
+6. **KDHS:** Chapters 2/4/5 data preparation, harmonised datasets and Shiny exploration; the card is a workflow illustration.
+7. **Rabies:** actual county-level estimated dog-population catchment outputs. National potential coverage is population-weighted, approximately 72.8% for 1 km and 95.9% for 3 km school buffers. Original county map and comparison chart included. Potential geographical coverage is not vaccination uptake.
+8. **Aberdare fires:** original undergraduate fire-severity map and multi-sensor analysis description.
+9. **HBPTAP:** appraisal and budget-impact work covering 125 proposed interventions. Scope dots and budget formula are explicitly illustrative; no financial results are invented.
+10. **Facility performance:** CEMA team application, 18 indicators and January 2022–December 2025. Overview counts are a reviewed application snapshot: 17,572 listed, 12,570 with any reporting. Any reporting is not complete reporting or a quality score.
+11. **Afya Mazingira:** team platform with a chart reconstructed from archived JKUAT station temperature samples. Historical station observations are distinguished from regional forecasts. Daily means can reflect uneven sampling.
 
-- **CT comparison:** 155 existing sites; a scenario adding 98 sites increases estimated 30-minute coverage from 78.77% to 90.98%. The plotted difference is 12.21 percentage points. `ct-scenario-summary.csv` contains exactly these chart inputs. This is not a new model run.
-- **County map:** derived from the supplied `Kenya_counties.gpkg` (47 features, EPSG:4326), simplified for presentation. Colours distinguish county shapes and do not encode disease risk, access or facility counts. The source GeoPackage remains outside the repository.
-- **Forest fire / temperature / Westlands maps:** original outputs already present in the portfolio repository, converted to WebP. The original versions remain in `images/`.
-- **Livestock dashboard:** earlier working screenshot supplied during the livestock dashboard project. It illustrates the application; it is not a live embed or a claim that every displayed number is the latest result.
-- **KDHS:** project description checked against the scholarship CV: R workflows for multi-header survey tables, harmonised Chapters 2/4/5 datasets, CSV/Parquet outputs and Shiny views. The schematic contains no generated survey values.
-- **Livestock screenshot gallery:** original October 2026 interface captures for the facility explorer and county overview. The overview is cropped to its introductory/summary panel to avoid blank lower panels; the facility view is resized only. Figures belong to the earlier interface state and are not asserted as current findings.
-- **Bayesian and vaccination illustrations:** custom HTML/CSS method diagrams. They contain no invented county risks, facility locations or model evaluation metrics.
-- **Power BI image:** the original portfolio professional-survey exercise, labelled as a portfolio exercise in the enlarged view.
+The public repository includes selected figures and aggregate summaries, not the uploaded archives, patient records or full analytical datasets. Project descriptions distinguish individual contributions, team products, modelled outputs and observed results. No publication status, evaluation metric or implementation impact is invented.
 
-The case studies do not expose unpublished source datasets, claim publication status or invent model-performance scores. Public source links point to Philip's existing GitHub and Tableau profiles/projects. The contact address was already public on the previous site.
+## Interaction and accessibility
 
-## Updating content
+Project filters announce counts. Native dialogs support focus containment and Escape to close; figures open at full size. Case studies have direct `#case/brazil`, `#case/accessibility`, `#case/yellowfever` and equivalent links. County navigation uses one tab stop and arrow keys. Motion respects reduced-motion preferences. Fonts are served locally and there are no analytics trackers.
 
-Edit case-study copy in `assets/js/portfolio.js` and visible summaries in `index.html` together. Replace WebP assets with the same filenames to preserve links. Re-run the validation script after changes. To rebuild the résumé, run `python scripts/build_resume.py` and visually inspect both PDF pages.
-
-Legacy template files remain for history and existing links, but the new homepage loads only the new portfolio stylesheet and script. The original template's license remains in `LICENSE.txt`.
-
-
-## Editorial revision, November 2026
-
-The second design review replaced the slogan-led dark homepage with an identity-led editorial layout, larger reading sizes, a light paper/green/terracotta palette and a locally hosted serif/sans type system. Two visible flagship projects lead the work, while four complementary projects complete the six-project selection. The facility-list comparison was replaced by the substantive KDHS data-and-dashboard project, including in the professional résumé.
-
-The review prioritised recruiting clarity, visible evidence, distinct analytical capabilities, faithful attribution, responsive reading and restrained movement. The Livestock Master Plan now has two switchable original captures and image enlargement, in addition to the detailed project notes. Native dialogs, keyboard county navigation, reduced-motion support and direct project links remain.
+Legacy template files and their license remain for existing links and history.

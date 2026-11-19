@@ -1,0 +1,56 @@
+{
+  "brazil": {
+    "sample_records": 20,
+    "walking_pct": [
+      5,
+      5,
+      35,
+      10,
+      45
+    ],
+    "motorised_pct": [
+      85,
+      5,
+      5,
+      0,
+      5
+    ],
+    "source": "Supplied travel_time_distribution figures; transcribed percentages"
+  },
+  "rabies": {
+    "buffer_km": [
+      1,
+      3
+    ],
+    "national_potential_dog_population_coverage_pct": [
+      72.83279542540836,
+      95.90549503181634
+    ],
+    "source": "paper 3 outputs county population coverage CSVs"
+  },
+  "oncology": [
+    {
+      "service": "Oncology services",
+      "scenario": "available",
+      "stratum": "<120 min",
+      "population": "46361016.1584289",
+      "national_population": "50835065.98458921",
+      "pct_of_national_population": "91.19889049122779",
+      "facility_count": "290"
+    },
+    {
+      "service": "Oncology services",
+      "scenario": "available_and_100pct_ready",
+      "stratum": "<120 min",
+      "population": "43217317.77568662",
+      "national_population": "50835065.98458921",
+      "pct_of_national_population": "85.01477658903418",
+      "facility_count": "50"
+    }
+  ],
+  "yellow_fever": {
+    "counties": 47,
+    "source": "posterior_predictions_manuscript_occurence.csv",
+    "scenario": "manuscript_occurence"
+  }
+}
