@@ -2,7 +2,7 @@
 
 Live: https://muchem1.github.io/PhilipWaweru/
 
-A responsive, dependency-free portfolio with eleven case studies. The dark green/lime visual system combines readable project summaries, original research figures, aggregate charts and accessible project dialogs.
+A responsive, dependency-free portfolio with eleven case studies. The dark navy/blue visual system combines readable project summaries, original research figures, aggregate charts and accessible project dialogs.
 
 ## Development
 
